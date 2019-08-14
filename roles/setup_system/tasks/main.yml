@@ -1,0 +1,101 @@
+---
+- include_vars: group_vars/{{ ansible_architecture }}.yml
+
+- name: Copy timesyncd.conf
+  copy:
+    src: timesyncd.conf
+    dest: /etc/systemd/timesyncd.conf
+
+- name: Enable systemd-timesyncd
+  command: timedatectl set-ntp true
+
+- name: Ensure locale en_US.UTF-8 locale is present
+  locale_gen:
+    name: en_US.UTF-8
+    state: present
+
+- name: Remove the existing localtime file
+  file:
+    path: /etc/localtime
+    state: absent
+
+- name: Set a new localtime file corresponding to the timezone
+  file:
+    src: /usr/share/zoneinfo/{{ timezone }}
+    dest: /etc/localtime
+    state: link
+    force: yes
+
+- name: Set timezone variables
+  copy:
+    content: "{{ timezone }}"
+    dest: /etc/timezone
+    owner: root
+    group: root
+    mode: 0644
+    backup: yes
+  notify: update timezone
+
+- name: Check if ssh key is present
+  stat: path=/root/.ssh/{{full_device_name}}.pub
+  register: ssh_key
+  tags: ssh_config
+
+- include: storage.yml
+  tags: storage
+
+- include: user_management.yml
+  tags: user_management
+
+- include: ssh_config.yml
+  tags: ssh_config
+  when: ssh_key.stat.exists == False
+
+- include: ansible.yml
+  tags: install_ansible
+
+- include: logs.yml
+  tags: logs
+
+- name: get public IP address
+  ipify_facts:
+  tags: update_api
+
+- name: API
+  block:
+    - name: POST device info
+      uri:
+        url: http://{{ideascube_api_service}}/devices
+        method: POST
+        body:
+          project: "{{id}}"
+          serial: "{{ansible_product_serial}}"
+          uuid: "{{ansible_product_uuid}}"
+          private_ip: "{{ansible_default_ipv4.address}}"
+          public_ip: "{{ipify_public_ip}}"
+          macaddress: "{{ansible_default_ipv4.macaddress}}"
+          name: "{{full_device_name}}"
+        body_format: json
+  rescue:
+    - name : GET device info
+      uri:
+        url: http://{{ideascube_api_service}}/devices?serial={{ansible_product_serial}}
+        method: GET
+        return_content: yes
+      register: json_from_api
+
+    - debug: msg="Device id is {{ json_from_api.json[0].id }}"
+
+    - name : UPDATE device info
+      uri:
+        url:  http://{{ideascube_api_service}}/devices/{{json_from_api.json[0].id}}
+        method: PUT
+        body:
+          project: "{{id}}"
+          serial: "{{ansible_product_serial}}"
+          uuid: "{{ansible_product_uuid}}"
+          private_ip: "{{ansible_default_ipv4.address}}"
+          public_ip: "{{ipify_public_ip}}"
+          macaddress: "{{ansible_default_ipv4.macaddress}}"
+          name: "{{full_device_name}}"
+        body_format: json

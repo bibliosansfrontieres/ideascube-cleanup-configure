@@ -1,0 +1,53 @@
+---
+- name: Stop services
+  systemd:
+    name: "{{ item }}"
+    state: stopped
+  with_items:
+    - uhttpd.service
+    - rabbitmq-server.service
+    - django-fastcgi
+    - celeryd.service
+    - nginx.service
+  ignore_errors: yes
+
+- name: Disable services
+  systemd:
+    name: "{{ item }}"
+    enabled: no
+  with_items:
+    - uhttpd.service
+    - rabbitmq-server.service
+    - django-fastcgi
+    - celeryd.service
+    - nginx.service
+  ignore_errors: yes
+
+- name: Remove unwanted packages before upgrading
+  apt:
+    name: "{{ packages }}"
+    state: absent
+    purge: yes
+    dpkg_options: 'force-confold,force-confdef'
+  vars:
+    packages:
+    - nginx
+
+- name: Remove unwanted files
+  file:
+    name: "{{ item }}"
+    state: absent
+  with_items:
+   - /etc/nginx/
+   - /lib/systemd/system/contenthub-usb.service
+   - /lib/systemd/system/uhttpd.service
+   - /lib/systemd/system/rabbitmq-server.service
+   - /etc/django-fastcgi
+   - /srv/
+   - /etc/hotplug.d/iface/90-ar2f
+   - /etc/hotplug.d/iface/40-balena-engine
+   - /etc/logrotate.d/ppp
+   - /etc/logrotate.d/rabbitmq-server
+   - /etc/logrotate.d/nginx
+   - /etc/udev/rules.d/80-uploaded.rules
+   - /etc/udev/rules.d/81-modem.rules
