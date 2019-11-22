@@ -6,7 +6,7 @@ ANSIBLE_BIN="/usr/bin/ansible-pull"
 ANSIBLE_ETC="/etc/ansible/facts.d/"
 TAGS=""
 BRANCH="master"
-GIT_RELEASE_TAG="1.1"
+GIT_RELEASE_TAG="1.2"
 
 [ $EUID -eq 0 ] || {
     echo "Error: you have to be root to run this script." >&2
@@ -111,4 +111,4 @@ echo -e "\n[+] Start configuration...follow logs : tail -f /var/log/ansible-pull
 
 $ANSIBLE_BIN --purge -C $GIT_RELEASE_TAG -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars "@/etc/ansible/facts.d/device_configuration.fact" $EXTRA_VARS2 $TAGS
 
-curl -sfL https://gitlab.com/bibliosansfrontieres/olip/olip-deploy/raw/master/go.sh | bash -s -- --name ideascube --url ideascube --descriptor http://drop.bsf-intranet.org/olip/conf-i386
+curl -sfL https://gitlab.com/bibliosansfrontieres/olip/olip-deploy/raw/master/go.sh | bash -s -- --name olip --url olip.lan --descriptor http://drop.bsf-intranet.org/olip/conf-i386
