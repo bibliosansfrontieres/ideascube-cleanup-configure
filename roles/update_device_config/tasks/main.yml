@@ -1,11 +1,11 @@
 ---
 - name: Set device name variable
   set_fact:
-    project_type: ideascube
     hostname: "{{ project_name }}"
     full_device_name: "{{ project_name }}-{{ ansible_default_ipv4.macaddress[11:17] | replace(':', '') }}"
+    hotspot_name: "_OLIP-{{ ansible_default_ipv4.macaddress[11:17] | replace(':', '') }}"
 
-- debug: msg="Start playbook {{ ansible_date_time["date"] }} - {{ ansible_date_time["time"] }} - I'm a {{ project_type }} / {{full_device_name}}"
+- debug: msg="Start playbook {{ ansible_date_time["date"] }} - {{ ansible_date_time["time"] }} - I'm a {{ project_domain_name }} / {{full_device_name}}"
 
 - name: Backup current configuration
   archive:
@@ -18,48 +18,69 @@
     recurse: yes
     state: directory
 
+- name: Delete hosts file entry 192.168.1.1
+  lineinfile:
+    dest: /etc/hosts
+    regexp: '^192\.168\.1\.1'
+    state: absent
+
 - name: Populate hosts file
   lineinfile:
     dest: /etc/hosts
-    line: '192.168.1.1 {{ project_type }}'
+    line: '192.168.123.1 {{ project_domain_name }} kiwix.{{ project_domain_name }} kolibri.{{ project_domain_name }} sites.{{ project_domain_name }} bsfcampus.{{ project_domain_name }}'
 
 - name: Switch to FDN DNS server
   command: uci set dhcp.@dnsmasq[0].server='80.67.169.12'
 
 - name: Server entries in /etc/hosts
-  command: uci set dhcp.@dnsmasq[0].domain='lan'
+  command: uci set dhcp.@dnsmasq[0].domain='io'
 
-- name: Ensure dnsmasq address is not present
-  shell: uci get dhcp.@dnsmasq[0].address ; echo
-  register: conf
+- name: Set dnsmasq local
+  command: uci set dhcp.@dnsmasq[0].local='/io/'
+
+- name: Delete any previous dnsmasq configuration
+  shell: uci del dhcp.@dnsmasq[0].address
+  ignore_errors: yes
 
 - name: Resolv domain and sub-domaine to AP ip address
-  command: uci add_list dhcp.@dnsmasq[0].address='/{{project_type}}/192.168.1.1'
-  when: conf.stdout == ""
+  command: uci add_list dhcp.@dnsmasq[0].address='/{{project_domain_name}}/192.168.123.1'
+
+- name: Delete previous dhcp option
+  shell: uci del dhcp.@dhcp[0].dhcp_option
+  ignore_errors: yes
+
+- name: Set dhcp option 
+  shell: uci add_list dhcp.@dhcp[0].dhcp_option="3,192.168.123.1" && uci add_list dhcp.@dhcp[0].dhcp_option="6,192.168.123.1"
 
 - name: Change nodogsplash URL to redirect to
-  command: uci set nodogsplash.@instance[0].redirecturl='http://{{project_type}}'
+  command: uci set nodogsplash.@instance[0].redirecturl='http://{{project_domain_name}}'
 
 - name: Set gateway name
-  command: uci set nodogsplash.@instance[0].gatewayname='{{project_type}}'
+  command: uci set nodogsplash.@instance[0].gatewayname='{{project_domain_name}}'
 
-- name: Enable nodogsplash
-  command: uci set nodogsplash.@instance[0].enabled='1'
+- name: Disable nodogsplash
+  command: uci set nodogsplash.@instance[0].enabled='0'
+
+- name: Network nodogsplash
+  command: uci set nodogsplash.@instance[0].network='io'
 
 - name: Set hostname
-  command: uci set system.@system[0].hostname='{{project_type}}'
+  command: uci set system.@system[0].hostname='{{project_domain_name}}'
 
 - name: Set system wide hostname
   shell: echo {{ full_device_name }} > /etc/hostname
+
+- name: Set network interface IP address
+  command: uci set network.@interface[0].ipaddr="192.168.123.1"
 
 - name: Set timezone
   command: uci set system.@system[0].timezone='{{ timezone }}'
 
 - name: Change SSID for 2.4Ghz
-  command: uci set wireless.@wifi-iface[0].ssid='{{full_device_name}}-2.4G'
+  command: uci set wireless.@wifi-iface[0].ssid='{{hotspot_name}}'
 
 - name: Change SSID for 5Ghz
-  command: uci set wireless.@wifi-iface[1].ssid='{{full_device_name}}-5G'
+  command: uci set wireless.@wifi-iface[1].ssid='{{hotspot_name}}-5G'
 
 - name: Commit changes
   command: uci commit {{item}}
@@ -68,6 +89,7 @@
     - nodogsplash
     - system
     - wireless
+    - network
 
 - name: Modify nodogsplash html page
   template:
