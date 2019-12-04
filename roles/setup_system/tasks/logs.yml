@@ -39,20 +39,6 @@
     dest: /etc/hotplug.d/iface/60-push-log
     mode: 755
 
-- name: copy idcstats script
-  copy:
-    src: idcstats.sh
-    dest: /usr/local/bin/idcstats.sh
-    mode: 755
-
-- name: Add a cron entry to run the idcstats script
-  cron:
-    name: "Run idcstats"
-    hour: "*/6"
-    minute: "5"
-    job: "/usr/local/bin/idcstats.sh"
-    state: present
-
 - name: copy APT User-Agent configuration
   copy:
     src: apt-user-agent.conf
