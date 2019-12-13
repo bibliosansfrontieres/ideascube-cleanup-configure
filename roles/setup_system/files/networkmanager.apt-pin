@@ -1,0 +1,15 @@
+Package: network-manager
+Pin: release *
+Pin-Priority: -1
+
+Package: network-manager-gnome
+Pin: release *
+Pin-Priority: -1
+
+Package: network-manager-pptp
+Pin: release *
+Pin-Priority: -1
+
+Package: cockpit-networkmanager
+Pin: release *
+Pin-Priority: -1

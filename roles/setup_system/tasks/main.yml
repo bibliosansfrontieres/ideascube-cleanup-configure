@@ -1,6 +1,11 @@
 ---
 - include_vars: group_vars/{{ ansible_architecture }}.yml
 
+- name: Make sure to never install Network-Manager related packages
+  copy: 
+    src: networkmanager.apt-pin
+    dest: /etc/apt/preferences.d/never-install-networkmanager
+
 - name: Copy timesyncd.conf
   copy:
     src: timesyncd.conf
