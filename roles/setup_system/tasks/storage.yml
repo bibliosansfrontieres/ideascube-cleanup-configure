@@ -1,7 +1,7 @@
 ---
 - name: Ensure the HDD mountpoint exists
   file:
-    path: /data/
+    path: /media/hdd
     state: directory
     mode: 0755
 
