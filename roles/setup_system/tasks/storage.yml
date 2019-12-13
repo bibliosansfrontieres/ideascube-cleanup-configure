@@ -1,7 +1,7 @@
 ---
 - name: Ensure the HDD mountpoint exists
   file:
-    path: /media/hdd
+    path: /data/
     state: directory
     mode: 0755
 
@@ -13,7 +13,7 @@
     group: root
     mode: 0644
 
-- name: Enable balena service
+- name: Enable mount point
   systemd:
     name: media-hdd.mount
     state: started
