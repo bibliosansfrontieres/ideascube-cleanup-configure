@@ -19,3 +19,9 @@
     state: started
     enabled: yes
     daemon_reload: yes
+
+- name: Create a symbolic link for data storage
+  file: 
+    src: /media/hdd/
+    dest: /data
+    state: link
