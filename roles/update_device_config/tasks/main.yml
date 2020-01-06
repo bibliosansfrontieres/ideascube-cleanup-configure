@@ -27,7 +27,7 @@
 - name: Populate hosts file
   lineinfile:
     dest: /etc/hosts
-    line: '192.168.1.1 {{ project_domain_name }} api.{{ project_domain_name }}'
+    line: '192.168.123.1 {{ project_domain_name }} api.{{ project_domain_name }}'
 
 - name: Switch to FDN DNS server
   command: uci set dhcp.@dnsmasq[0].server='80.67.169.12'
@@ -43,14 +43,14 @@
   ignore_errors: yes
 
 - name: Resolv domain and sub-domaine to AP ip address
-  command: uci add_list dhcp.@dnsmasq[0].address='/{{project_domain_name}}/192.168.1.1'
+  command: uci add_list dhcp.@dnsmasq[0].address='/{{project_domain_name}}/192.168.123.1'
 
 - name: Delete previous dhcp option
   shell: uci del dhcp.@dhcp[0].dhcp_option
   ignore_errors: yes
 
 - name: Set dhcp option 
-  shell: uci add_list dhcp.@dhcp[0].dhcp_option="3,192.168.1.1" && uci add_list dhcp.@dhcp[0].dhcp_option="6,192.168.1.1"
+  shell: uci add_list dhcp.@dhcp[0].dhcp_option="3,192.168.123.1" && uci add_list dhcp.@dhcp[0].dhcp_option="6,192.168.123.1"
 
 - name: Change nodogsplash URL to redirect to
   command: uci set nodogsplash.@instance[0].redirecturl='http://{{project_domain_name}}'
@@ -71,7 +71,7 @@
   shell: echo {{ full_device_name }} > /etc/hostname
 
 - name: Set network interface IP address
-  command: uci set network.@interface[0].ipaddr="192.168.1.1"
+  command: uci set network.@interface[0].ipaddr="192.168.123.1"
 
 - name: Set timezone
   command: uci set system.@system[0].timezone='{{ timezone }}'
