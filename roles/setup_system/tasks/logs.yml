@@ -51,3 +51,4 @@
     regexp: '^ANACRON_RUN_ON_BATTERY_POWER'
     line: 'ANACRON_RUN_ON_BATTERY_POWER=yes'
     state: present
+    create: yes
