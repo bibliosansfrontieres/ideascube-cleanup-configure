@@ -111,4 +111,4 @@ echo -e "\n[+] Start configuration...follow logs : tail -f /var/log/ansible-pull
 
 $ANSIBLE_BIN --purge -C $GIT_RELEASE_TAG -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars "@/etc/ansible/facts.d/device_configuration.fact" $EXTRA_VARS2 $TAGS
 
-curl -sfL https://gitlab.com/bibliosansfrontieres/olip/olip-deploy/raw/master/go.sh | bash -s -- --name ideascube --url ideascube.io --descriptor http://drop.bsf-intranet.org/olip/conf-i386
+curl -sfL https://gitlab.com/bibliosansfrontieres/olip/olip-deploy/raw/master/go.sh | bash -s -- --name ideascube --url ideascube.io --descriptor http://olip.ideascube.org/i386
