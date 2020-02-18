@@ -6,4 +6,5 @@
     - update_device_config
     - setup_system
     - tinc
+    - olip
 

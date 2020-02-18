@@ -1,0 +1,13 @@
+#!/bin/sh
+
+. $IPKG_INSTROOT/lib/functions.sh
+. $IPKG_INSTROOT/lib/functions/network.sh
+
+[ "$ACTION" = "ifup" -a "$INTERFACE" = "wan" -o "$INTERFACE" = "modem" ] && {
+   kb_doctor_ip=`avahi-resolve-host-name {{ local_cache_server }} | awk -F " " '{print $2}'`
+
+  if expr "$kb_doctor_ip" : '[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*$' >/dev/null;
+  then
+    /usr/local/bin/balena-engine exec olip-api sh -c 'LANG=C.UTF-8 echo '$kb_doctor_ip' {{ local_cache_server }} kiwix.ideascube.org packages.ideascube.org >> /etc/hosts'
+  fi
+}
