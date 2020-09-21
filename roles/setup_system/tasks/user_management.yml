@@ -17,7 +17,6 @@
   with_file:
     - florian.pub
     - tom.pub
-    - steven.pub
 
 - name: Set up authorized_keys for root user
   authorized_key:
@@ -26,4 +25,3 @@
   with_file:
     - florian.pub
     - tom.pub
-    - steven.pub
