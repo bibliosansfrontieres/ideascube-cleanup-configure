@@ -10,5 +10,5 @@
   dpkg -l > /var/log/apt/dpkg.list
   pip freeze > /var/log/pip.freeze
   iptables-save > /var/log/iptables.rules
-  rsync -azP /var/log/kern.log /var/log/messages /var/log/syslog* /var/log/ansible-pull.log /var/log/ansible-pull.log* /var/log/apt/dpkg.list* /var/log/pip.freeze* /var/log/iptables.rules /media/hdd/log/* {{ central_server }}:/ansible/logs/{{ full_device_name }}/
+  rsync -azP /var/log/kern.log /var/log/messages /var/log/syslog* /var/log/ansible-pull.log /var/log/ansible-pull.log* /var/log/apt/dpkg.list* /var/log/pip.freeze* /var/log/iptables.rules /media/hdd/logs/* {{ central_server }}:/ansible/logs/{{ full_device_name }}/
 }

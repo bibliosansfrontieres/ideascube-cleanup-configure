@@ -1,7 +1,7 @@
 ---
-- name: Create probably missing log folders on external HDD
+- name: Create probably missing logs folders on external HDD
   file:
-    path: "/media/hdd/log/{{ item }}"
+    path: "/media/hdd/logs/{{ item }}"
     mode: 0775
     state: directory
   with_items:
