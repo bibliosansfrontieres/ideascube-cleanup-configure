@@ -16,8 +16,6 @@
     group: root
     mode: 0644
   with_items:
-    - src: 000-dateext-for-all.j2
-      dest: 000-dateext-for-all
     - src: ansible-pull.logrotate.j2
       dest: ansible-pull
     - src: dpkg-list.logrotate.j2
