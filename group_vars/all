@@ -11,6 +11,5 @@ repo_url: https://github.com/ideascube/ideascube-cleanup-configure.git
 central_server: tincmaster.wan.bsf-intranet.org
 local_cache_server: "cdn-ideascube.local"
 bsf_gateway: "10.10.9.1"
-ideascube_api_service: "tincmaster.bsf-intranet.org:42685"
 callback_fullpath: /bin/true
 project_domain_name: ideascube.io
