@@ -103,13 +103,6 @@
   rescue:
   - debug: msg="No cache machine has been detected on the local network"
 
-- block:
-  - name: Check if in BSF local network
-    wait_for: host="{{ bsf_gateway }}" port=80 state=present timeout=3
-    register: bsf_local_network
-  rescue:
-  - debug: msg="Not in BSF local network"
-
 - name: Copy tweaked hotplug.d firewall service script
   copy:
     src: "20-firewall"
