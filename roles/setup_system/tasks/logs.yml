@@ -1,13 +1,4 @@
 ---
-- name: Create probably missing logs folders on external HDD
-  file:
-    path: "/media/hdd/logs/{{ item }}"
-    mode: 0775
-    state: directory
-  with_items:
-    - nginx
-    - uwsgi
-
 - name: Configure logrotate to handle our custom logs.
   template:
     src: "{{ item.src }}"
