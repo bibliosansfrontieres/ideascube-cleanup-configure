@@ -49,7 +49,7 @@
   shell: uci del dhcp.@dhcp[0].dhcp_option
   ignore_errors: yes
 
-- name: Set dhcp option 
+- name: Set dhcp option
   shell: uci add_list dhcp.@dhcp[0].dhcp_option="3,192.168.123.1" && uci add_list dhcp.@dhcp[0].dhcp_option="6,192.168.123.1"
 
 - name: Change nodogsplash URL to redirect to
