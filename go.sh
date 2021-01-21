@@ -4,9 +4,7 @@ ANSIBLECAP_PATH="/var/lib/ansible/local"
 GIT_REPO_URL="https://github.com/bibliosansfrontieres/ideascube-cleanup-configure.git"
 ANSIBLE_BIN="/usr/bin/ansible-pull"
 ANSIBLE_ETC="/etc/ansible/facts.d/"
-TAGS=""
 BRANCH="master"
-GIT_RELEASE_TAG="1.7.6"
 
 [ $EUID -eq 0 ] || {
     echo "Error: you have to be root to run this script." >&2
@@ -60,53 +58,9 @@ function clone_ansiblecube()
 echo "Checking file access" >> /var/log/ansible-pull.log
 [ $? -ne 0 ] && echo "No space left to write logs or permission problem, exiting." && exit 1
 
-while [[ $# -gt 0 ]]
-do
-    case $1 in
-        -n|--name)
-
-            if [ -z "$2" ]
-            then
-                echo -e "\n\t[+] ERROR\n\t--name : Missing device name\n"
-
-                exit 0;
-            fi
-            PROJECT_NAME=$2
-
-        shift
-        ;;
-        --extra-vars)
-
-            if [ -n "$2" ]
-            then
-                EXTRA_VARS2="--extra-vars $2"
-            fi
-
-        shift
-        ;;
-        *)
-            help
-        ;;
-    esac
-    shift
-done
-
-echo -n "[+] Retrieve device configuration from API"
-apt-get install --quiet --quiet -y jq
-result_from_api=`curl -s http://tincmaster.bsf-intranet.org:42685/projects?project_name=$PROJECT_NAME |jq ".[]"`
-
-if [ -z "$result_from_api" ]
-then
-  echo -e "\n[+] ERROR ==> This project name : $PROJECT_NAME does not exist\n"
-
-  exit 1;
-else
-  echo $result_from_api > /etc/ansible/facts.d/device_configuration.fact
-fi
-
 cd $ANSIBLECAP_PATH
 
-echo "$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars \"@/etc/ansible/facts.d/device_configuration.fact\" $EXTRA_VARS2 $TAGS" >> /var/lib/ansible/ansible-pull-cmd-line.sh
+echo "$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml" >> /var/lib/ansible/ansible-pull-cmd-line.sh
 echo -e "\n[+] Start configuration...follow logs : tail -f /var/log/ansible-pull.log"
 
-$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars "@/etc/ansible/facts.d/device_configuration.fact" $EXTRA_VARS2 $TAGS
+$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml

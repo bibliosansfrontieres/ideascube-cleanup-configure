@@ -49,7 +49,7 @@
   shell: uci del dhcp.@dhcp[0].dhcp_option
   ignore_errors: yes
 
-- name: Set dhcp option 
+- name: Set dhcp option
   shell: uci add_list dhcp.@dhcp[0].dhcp_option="3,192.168.123.1" && uci add_list dhcp.@dhcp[0].dhcp_option="6,192.168.123.1"
 
 - name: Change nodogsplash URL to redirect to
@@ -102,13 +102,6 @@
     register: cache_machine
   rescue:
   - debug: msg="No cache machine has been detected on the local network"
-
-- block:
-  - name: Check if in BSF local network
-    wait_for: host="{{ bsf_gateway }}" port=80 state=present timeout=3
-    register: bsf_local_network
-  rescue:
-  - debug: msg="Not in BSF local network"
 
 - name: Copy tweaked hotplug.d firewall service script
   copy:
