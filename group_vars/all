@@ -11,4 +11,4 @@ central_server: tincmaster.wan.bsf-intranet.org
 local_cache_server: "cdn-ideascube.local"
 callback_fullpath: /bin/true
 project_name : ideascube
-project_domain_name: {{project_name}}.io
+project_domain_name: "{{project_name}}.io"
