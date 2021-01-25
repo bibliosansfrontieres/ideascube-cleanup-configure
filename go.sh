@@ -58,9 +58,31 @@ function clone_ansiblecube()
 echo "Checking file access" >> /var/log/ansible-pull.log
 [ $? -ne 0 ] && echo "No space left to write logs or permission problem, exiting." && exit 1
 
+while [[ $# -gt 0 ]]
+do
+    case $1 in
+        -n|--name)
+
+            if [ -z "$2" ]
+            then
+                echo -e "\n\t[+] ERROR\n\t--name : Missing device name\n"
+
+                exit 0;
+            fi
+            PROJECT_NAME=$2
+
+        shift
+        ;;
+        *)
+            exit
+        ;;
+    esac
+    shift
+done
+
 cd $ANSIBLECAP_PATH
 
-echo "$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml" >> /var/lib/ansible/ansible-pull-cmd-line.sh
+echo "$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars \"project_name=$PROJECT_NAME\"" >> /var/lib/ansible/ansible-pull-cmd-line.sh
 echo -e "\n[+] Start configuration...follow logs : tail -f /var/log/ansible-pull.log"
 
-$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml
+$ANSIBLE_BIN --purge -C $BRANCH -d $ANSIBLECAP_PATH -i hosts -U $GIT_REPO_URL main.yml --extra-vars "project_name=$PROJECT_NAME"
